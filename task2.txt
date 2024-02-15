@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Stopwatch</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      color: #fff;
+    }
+
+    .stopwatch-container {
+      text-align: center;
+    }
+
+    .circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #3498db, #2c3e50);
+      margin-bottom: 20px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .half-circle {
+      width: 200px;
+      height: 100px;
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      border-bottom-left-radius: 100px;
+      border-bottom-right-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    .stopwatch-display {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .button {
+      background: #34495e;
+      color: #ecf0f1;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .button:hover {
+      background: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+
+<div class="stopwatch-container">
+  <div class="circle"></div>
+  <div class="half-circle"></div>
+  <div class="stopwatch-display">00:00:00</div>
+  <div class="buttons">
+    <button class="button" id="startBtn">Start</button>
+    <button class="button" id="pauseBtn">Pause</button>
+    <button class="button" id="resetBtn">Reset</button>
+  </div>
+</div>
+
+<script>
+  let startTime;
+  let elapsedTime = 0;
+  let timerInterval;
+
+  const circle = document.querySelector('.circle');
+  const halfCircle = document.querySelector('.half-circle');
+  const stopwatchDisplay = document.querySelector('.stopwatch-display');
+  const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function startTimer() {
+    startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(updateTime, 10);
+
+    // Update UI
+    startBtn.disabled = true;
+    startBtn.style.background = '#95a5a6';
+    pauseBtn.disabled = false;
+    resetBtn.disabled = false;
+  }
+
+  function pauseTimer() {
+    clearInterval(timerInterval);
+
+    // Update UI
+    startBtn.disabled = false;
+    startBtn.style.background = '#34495e';
+    pauseBtn.disabled = true;
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    elapsedTime = 0;
+    updateDisplay();
+
+    // Update UI
+    startBtn.disabled = false;
+    startBtn.style.background = '#34495e';
+    pauseBtn.disabled = true;
+    resetBtn.disabled = true;
+  }
+
+  function updateTime() {
+    const currentTime = Date.now();
+    elapsedTime = currentTime - startTime;
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    const formattedTime = formatTime(elapsedTime);
+    stopwatchDisplay.textContent = formattedTime;
+
+    // Rotate circle and half-circle
+    const rotation = elapsedTime / 10; // Adjust the value to control rotation speed
+    circle.style.transform = `rotate(${rotation}deg)`;
+    halfCircle.style.transform = `rotate(${rotation}deg)`;
+  }
+
+  function formatTime(time) {
+    const hours = Math.floor(time / 3600000);
+    const minutes = Math.floor((time % 3600000) / 60000);
+    const seconds = Math.floor((time % 60000) / 1000);
+    const milliseconds = Math.floor(time % 1000);
+
+    return (
+      padNumber(hours) +
+      ':' +
+      padNumber(minutes) +
+      ':' +
+      padNumber(seconds) +
+      '.' +
+      padNumber(milliseconds, 3)
+    );
+  }
+
+  function padNumber(num, length = 2) {
+    return num.toString().padStart(length, '0');
+  }
+
+  // Event listeners
+  startBtn.addEventListener('click', startTimer);
+  pauseBtn.addEventListener('click', pauseTimer);
+  resetBtn.addEventListener('click', resetTimer);
+</script>
+
+</body>
+</html>
